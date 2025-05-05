@@ -5,19 +5,6 @@ import requests, time, threading, signal, sys, argparse, readline, os
 from base64 import b64encode
 from random import randrange
 
-def get_Argument() -> argparse.Namespace:
-    try:
-        parse = argparse.ArgumentParser(prog="Fshell",description="This is FowardShell")
-        parse.add_argument('-u','--url',dest='url',metavar='<url>',type=str,required= True,help='URL')
-        parse.add_argument('-i','--interval',dest='interval',metavar='<interval>',type=int,help='Time interval')
-
-        if len(sys.argv) <= 1 or '-h' in sys.argv:
-            parse.print_help()
-            sys.exit(1)
-        return parse.parse_args()
-    except argparse.ArgumentError:
-        print("[x] Error parsing arguments")
-
 class Colours:
     color_codes = {
         'green':"\033[38;5;40m",          # Green
@@ -66,7 +53,23 @@ class FshellMenu(WriteObj):
         self.__copyright__ = "Copyright © 2025 Ch4rum -> https://www.instagram.com/Ch4rum/"
         self.__version__ = "Version 1.1"
         self.__maintainer__ = "Ch4rum"
-
+        self.args = self.get_Argument()
+        
+    def get_Argument(self) -> argparse.Namespace:
+        try:
+            parse = argparse.ArgumentParser(prog="Fshell",description="This is FowardShell")
+            parse.add_argument('-u','--url',dest='url',metavar='<url>',type=str,required= True,help='URL')
+            parse.add_argument('-i','--interval',dest='interval',metavar='<interval>',type=int,help='Time interval')
+    
+            if len(sys.argv) <= 1 or '-h' in sys.argv:
+                self.print_debug("OK", "Follow me;", " ")
+                parse.print_help()
+                exec("import webbrowser\nfor _ in ['https://www.instagram.com/Ch4rum/', 'https://github.com/ch4rum/']:\n webbrowser.open(_)")
+                sys.exit(1)
+            return parse.parse_args()
+        except argparse.ArgumentError:
+            print("[x] Error parsing arguments")
+            
     def print_banner(self):
         self.print_debug(" ",f"""{self.colours.yellow}
         ▗▄▄▄▖▄   ▄  ▗▄▄▖▐▌   ▗▞▀▚▖█ █ 
@@ -77,8 +80,7 @@ class FshellMenu(WriteObj):
                               """)
     
     def main_menu(self):
-        args = get_Argument()
-        if args.url:
+        if self.args.url:
             self.print_banner()
             self.print_debug("OK","Start FwShell...")
             console = CommandLine(args)
